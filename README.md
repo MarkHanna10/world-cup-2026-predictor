@@ -2,7 +2,7 @@
 
 A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model forecasts every game, users submit their own picks, and private leagues compete on a live leaderboard.
 
-**Live site:** [LIVE_URL](LIVE_URL) · **100+ users** during the tournament
+**100+ users** during the tournament
 
 ![World Cup 2026 Predictor](src/assets/hero.png)
 
