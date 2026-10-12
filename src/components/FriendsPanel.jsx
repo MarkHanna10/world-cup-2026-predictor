@@ -2,6 +2,7 @@
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 import { generateInviteToken } from "../utils/social";
+import { APP_URL } from "../utils/appUrl";
 
 function Avatar({ url, username, size = 30 }) {
   if (url) return <img src={url} alt={username} className="rounded-full object-cover shrink-0" style={{ width: size, height: size }} />;
@@ -83,7 +84,7 @@ export default function FriendsPanel() {
     const token = generateInviteToken();
     const { error } = await supabase.from("friend_invites").insert({ token, creator_id: user.id });
     if (!error) {
-      const url = `${window.location.origin}/invite/${token}`;
+      const url = `${APP_URL}/invite/${token}`;
       setInviteUrl(url);
     }
   }

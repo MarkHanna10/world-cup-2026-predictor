@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { useModalA11y } from "../hooks/useModalA11y";
+import { APP_URL } from "../utils/appUrl";
 
 const OAUTH_PROVIDERS = [
   {
@@ -63,7 +64,7 @@ export default function AuthModal({ onClose, onAuth, initialMode = "login" }) {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: window.location.origin },
+        options: { redirectTo: APP_URL },
       });
       if (error) throw error;
     } catch (err) {
@@ -99,7 +100,7 @@ export default function AuthModal({ onClose, onAuth, initialMode = "login" }) {
           email,
           password,
           options: {
-            emailRedirectTo: import.meta.env.VITE_APP_URL ?? window.location.origin,
+            emailRedirectTo: import.meta.env.VITE_APP_URL ?? APP_URL,
             data: {
               display_name: name,
               username: username.toLowerCase(),

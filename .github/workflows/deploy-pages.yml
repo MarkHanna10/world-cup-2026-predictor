@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+# Builds the site and publishes it to the gh-pages branch.
+# Runs on every push to main and after each scheduled data refresh,
+# since commits made by the refresh bot do not trigger push events.
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows:
+      - "Refresh form & predictions (daily)"
+      - "Refresh squads, player stats & model (weekly)"
+    types: [completed]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    env:
+      VITE_BASE: /${{ github.event.repository.name }}/
+      VITE_APP_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+      # The anon key is public by design (it ships in the browser bundle).
+      # Row-level security in Postgres controls what it reaches.
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || 'https://efrhtycodarydbkogwue.supabase.co' }}
+      VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmcmh0eWNvZGFyeWRia29nd3VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NTkwMjQsImV4cCI6MjA5NTEzNTAyNH0.miMh4jz5CxpM6sfAV4rOdjSh16nT6_IoKbB6Egvg4fA' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+      # SPA fallback for deep links such as /invite/<token>
+      - run: cp dist/index.html dist/404.html && touch dist/.nojekyll
+
+      - name: Publish to gh-pages
+        run: |
+          cd dist
+          git init -q -b gh-pages
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Deploy ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" gh-pages

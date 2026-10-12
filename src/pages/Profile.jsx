@@ -3,6 +3,7 @@ import { useAuth }  from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import { calculateGroupScores, calculateStreaks, buildResultsMap } from "../utils/scoring";
 import FriendsPanel from "../components/FriendsPanel";
+import { APP_URL } from "../utils/appUrl";
 
 const inputStyle = {
   width: "100%",
@@ -210,7 +211,7 @@ export default function Profile() {
   async function handlePasswordReset() {
     setResetError(null);
     const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-      redirectTo: window.location.origin,
+      redirectTo: APP_URL,
     });
     if (error) setResetError(error.message);
     else setResetSent(true);

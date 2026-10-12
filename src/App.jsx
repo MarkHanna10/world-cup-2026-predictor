@@ -27,6 +27,7 @@ import banner        from "./assets/worldcupbanner.webp";
 import trophy        from "./assets/worldcuppng.webp";
 import wclogo        from "./assets/worldcuplogo.webp";
 import "./index.css";
+import { appPathname } from "./utils/appUrl";
 
 const HOST_NATIONS = [
   { name: "USA",    flag: "🇺🇸" },
@@ -208,7 +209,7 @@ function UserProfileModal({ userId, username, avatarUrl, onClose, onViewBracket 
 export default function App() {
   // Detect /invite/<token> on load
   const inviteToken = (() => {
-    const m = window.location.pathname.match(/^\/invite\/([a-z0-9]{8})$/i);
+    const m = appPathname().match(/^\/invite\/([a-z0-9]{8})$/i);
     return m ? m[1] : null;
   })();
 
