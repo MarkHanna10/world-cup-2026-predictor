@@ -2,7 +2,7 @@
 
 A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model forecasts every game, users submit their own picks, and private leagues compete on a live leaderboard.
 
-**100+ users** during the tournament
+**Live site:** [markhanna10.github.io/world-cup-2026-predictor](https://markhanna10.github.io/world-cup-2026-predictor/) · **100+ users** during the tournament
 
 ![World Cup 2026 Predictor](src/assets/hero.png)
 
@@ -24,7 +24,7 @@ A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model
 | Model | Python, scikit-learn, NumPy |
 | Data | FotMob, Polymarket, Kaggle international results |
 | Testing | Vitest (23 unit tests), k6 load-test scaffold |
-| CI/CD | GitHub Actions, Dependabot, Vercel |
+| CI/CD | GitHub Actions, Dependabot, GitHub Pages |
 
 ## Architecture
 
