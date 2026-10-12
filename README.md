@@ -4,7 +4,7 @@ A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model
 
 **Live site:** [markhanna10.github.io/world-cup-2026-predictor](https://markhanna10.github.io/world-cup-2026-predictor/) · **100+ users** during the tournament
 
-![World Cup 2026 Predictor](src/assets/hero.png)
+![Schedule view of the World Cup 2026 Predictor](docs/screenshot.png)
 
 ## Highlights
 
