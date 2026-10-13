@@ -7,10 +7,9 @@ name: Refresh form & predictions (daily)
 # Only reads FotMob (public) and writes local JSON — no secrets required.
 
 on:
-  schedule:
-    # 09:00 UTC daily — after the previous match day's evening (ET) games settle
-    - cron: "0 9 * * *"
-  workflow_dispatch: {}   # allow manual run from the Actions tab
+  # The tournament ended on 19 July 2026, so the schedule is off and the
+  # data stays frozen at its final state. Run it by hand from the Actions tab.
+  workflow_dispatch: {}
 
 # Let the default GITHUB_TOKEN push the data commit back to the repo
 permissions:

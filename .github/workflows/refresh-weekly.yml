@@ -8,9 +8,8 @@ name: Refresh squads, player stats & model (weekly)
 # Only reads FotMob (public) and writes local JSON — no secrets required.
 
 on:
-  schedule:
-    # 08:00 UTC every Monday
-    - cron: "0 8 * * 1"
+  # The tournament ended on 19 July 2026, so the schedule is off and the
+  # data stays frozen at its final state. Run it by hand from the Actions tab.
   workflow_dispatch: {}
 
 permissions:

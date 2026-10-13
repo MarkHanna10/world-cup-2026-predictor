@@ -1,18 +1,20 @@
 # World Cup 2026 Predictor
 
-A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model forecasts every game, users submit their own picks, and private leagues compete on a live leaderboard.
+A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model forecast every game, users submitted their own picks, and private leagues competed on a live leaderboard.
 
 **Live site:** [markhanna10.github.io/world-cup-2026-predictor](https://markhanna10.github.io/world-cup-2026-predictor/) · **100+ users** during the tournament
+
+**Status:** the tournament ended on 19 July 2026 with Spain beating Argentina 1–0 in the final. Picks are closed and the data is frozen. The model's predictions stay open to everyone, no account needed.
 
 ![Schedule view of the World Cup 2026 Predictor](docs/screenshot.png)
 
 ## Highlights
 
-- **Prediction model.** Logistic regression trained on 2,448 decisive international matches since 2000. Features: ELO gap, recent form, head-to-head record, attack and defence ratings. 68.6% accuracy under 5-fold cross-validation.
+- **Prediction model.** Logistic regression trained on 2,448 decisive international matches since 2000. Features: ELO gap, recent form, head-to-head record, attack and defence ratings. 68.6% accuracy under 5-fold cross-validation. During the tournament, predictions frozen before kickoff picked the right result in 29 of 43 group matches (67%), counting draws as misses since the model never predicts a draw.
 - **Tournament simulation.** 10,000 Monte Carlo runs of the full bracket produce each team's odds of reaching every round.
 - **Live scores.** A Supabase Edge Function polls match data every minute through `pg_cron` and pushes goals, cards and subs to the browser over Realtime. No client polling.
 - **Picks and leagues.** Email, magic link and Google sign-in. Private leagues with join codes, confidence picks, streaks and a database trigger to lock picks at kickoff.
-- **Automated data pipeline.** GitHub Actions refresh form data and rerun the simulation daily, commit the new JSON and trigger a Vercel redeploy.
+- **Automated data pipeline.** GitHub Actions refresh form data and rerun the simulation daily, commit the new JSON and redeploy the site. The schedule is off now the tournament is over.
 - **Security.** Row-level security on every table. The service-role key lives only in the edge function and CI secrets.
 
 ## Tech stack
@@ -32,7 +34,7 @@ A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model
 flowchart LR
     SRC[FotMob · Polymarket · Kaggle] --> PIPE[scripts/ + GitHub Actions]
     PIPE --> JSON[src/data/*.json]
-    JSON --> APP[React SPA on Vercel]
+    JSON --> APP[React SPA on GitHub Pages]
     SRC --> EF[Edge Function: live-feed]
     EF --> DB[(Supabase Postgres + RLS)]
     DB -- Realtime --> APP

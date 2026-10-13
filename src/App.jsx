@@ -15,7 +15,6 @@ import Leagues       from "./pages/Leagues";
 import InviteRedirect from "./pages/InviteRedirect";
 import AuthModal     from "./components/AuthModal";
 import DisclaimerModal, { hasAcceptedDisclaimer } from "./components/DisclaimerModal";
-import SignInGate from "./components/SignInGate";
 import TeamModal     from "./pages/TeamModal";
 import PlayerModal    from "./components/PlayerModal";
 import Teams         from "./pages/Teams";
@@ -26,6 +25,7 @@ import { buildResultsMap, calculateStreaks, calculateGroupScores } from "./utils
 import banner        from "./assets/worldcupbanner.webp";
 import trophy        from "./assets/worldcuppng.webp";
 import wclogo        from "./assets/worldcuplogo.webp";
+import tournamentResult from "./data/tournament_result.json";
 import "./index.css";
 import { appPathname } from "./utils/appUrl";
 
@@ -59,21 +59,15 @@ const IconGlobe        = () => <svg width="16" height="16" viewBox="0 0 24 24" f
 // ── Top banner ────────────────────────────────────────────────────────────────
 
 function CountdownBanner() {
+  const { champion, runnerUp, finalScore } = tournamentResult;
   return (
-    <div
-      className="w-full flex items-center justify-center gap-4 px-4 py-2 shrink-0"
-      style={{ background: "linear-gradient(90deg, #1a3a8f 0%, #1e40af 50%, #1a3a8f 100%)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}
-    >
+    <div className="w-full flex items-center justify-center gap-3 px-4 py-2 shrink-0 bg-[linear-gradient(90deg,#1a3a8f_0%,#1e40af_50%,#1a3a8f_100%)] border-b border-white/10">
       <img src={wclogo} alt="FIFA World Cup 2026" className="w-7 h-7 object-contain" />
-      <p className="font-black text-white tracking-widest" style={{ fontSize: "0.85rem", letterSpacing: "0.06em" }}>
-        🏆 THE WORLD CUP IS HERE
+      <p className="font-black text-white text-[0.85rem] tracking-[0.06em]">
+        🏆 {champion.toUpperCase()} WIN THE WORLD CUP
       </p>
-      <span className="hidden sm:inline" style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.45)", fontWeight: 600, letterSpacing: "0.08em" }}>
-        11 JUNE – 19 JULY 2026
-      </span>
-      <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full" style={{ background: "rgba(239,68,68,0.2)", border: "1px solid rgba(239,68,68,0.35)" }}>
-        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-        <span className="text-xs font-black" style={{ color: "#f87171", letterSpacing: "0.05em" }}>LIVE</span>
+      <span className="hidden sm:inline text-[0.7rem] font-semibold tracking-[0.04em] text-white/60">
+        Beat {runnerUp} {finalScore} in the final · Tournament complete
       </span>
     </div>
   );
@@ -390,8 +384,8 @@ export default function App() {
             </span>
           </div>
         )}
-        <SideNavItem label="Group Stage"       icon={<IconGrid />}    active={activeTab === "groups"}  onClick={() => navigate("groups")}  accent="#c8f000" muted locked={!user} />
-        <SideNavItem label="Simulated Bracket" icon={<IconBracket />} active={activeTab === "bracket"} onClick={() => navigate("bracket")} accent="#c8f000" muted locked={!user} />
+        <SideNavItem label="Group Stage"       icon={<IconGrid />}    active={activeTab === "groups"}  onClick={() => navigate("groups")}  accent="#c8f000" muted />
+        <SideNavItem label="Simulated Bracket" icon={<IconBracket />} active={activeTab === "bracket"} onClick={() => navigate("bracket")} accent="#c8f000" muted />
 
         <div className="shrink-0" style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "12px 0" }} />
 
@@ -581,22 +575,19 @@ export default function App() {
 
                     <div className="mt-1">
                       <button
-                        onClick={() => { navigate("mine"); }}
-                        className="group inline-flex items-center gap-3 rounded-2xl px-6 py-4 font-black transition-all duration-200 active:scale-95"
-                        style={{ background: "linear-gradient(135deg,#dc2626,#b91c1c)", boxShadow: "0 0 32px rgba(220,38,38,0.55),0 4px 16px rgba(0,0,0,0.4)", border: "1px solid rgba(255,100,100,0.3)", animation: "ctaPulse 2.5s ease-in-out infinite" }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "linear-gradient(135deg,#ef4444,#dc2626)"; e.currentTarget.style.boxShadow = "0 0 48px rgba(239,68,68,0.7)"; e.currentTarget.style.animation = "none"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = "linear-gradient(135deg,#dc2626,#b91c1c)"; e.currentTarget.style.boxShadow = "0 0 32px rgba(220,38,38,0.55),0 4px 16px rgba(0,0,0,0.4)"; e.currentTarget.style.animation = "ctaPulse 2.5s ease-in-out infinite"; }}
+                        onClick={() => { navigate("schedule"); }}
+                        className="group inline-flex items-center gap-3 rounded-2xl px-6 py-4 font-black transition-colors duration-200 active:scale-95 bg-[linear-gradient(135deg,#dc2626,#b91c1c)] hover:bg-[linear-gradient(135deg,#ef4444,#dc2626)] border border-[rgba(255,100,100,0.3)] shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
                       >
-                        <span style={{ fontSize: "1.6rem", lineHeight: 1 }}>🏆</span>
+                        <span className="text-[1.6rem] leading-none">🏆</span>
                         <div className="text-left">
-                          <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "1.5rem", letterSpacing: "0.06em", color: "white", lineHeight: 1 }}>START PREDICTING</div>
-                          <div className="text-xs font-semibold mt-0.5" style={{ color: "rgba(255,255,255,0.75)", letterSpacing: "0.04em" }}>Make your bracket · Compete with friends →</div>
+                          <div className="font-['Bebas_Neue',sans-serif] text-[1.5rem] tracking-[0.06em] text-white leading-none">SEE THE RESULTS</div>
+                          <div className="text-xs font-semibold mt-0.5 text-white/75 tracking-[0.04em]">Every score, final standings and how the model did</div>
                         </div>
-                        <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" style={{ color: "rgba(255,255,255,0.7)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 transition-transform group-hover:translate-x-1 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
                       </button>
-                      <p className="text-xs mt-2" style={{ color: "rgba(255,255,255,0.55)" }}>Make your picks · Submit your bracket · Compete with friends</p>
+                      <p className="text-xs mt-2 text-white/55">The tournament ended on 19 July 2026. Picks are closed. The model's match predictions stay open to everyone.</p>
                       <button onClick={() => setShowRules(true)} className="text-xs mt-1 underline underline-offset-2 transition-colors" style={{ color: "rgba(200,240,0,0.45)" }} onMouseEnter={e => e.currentTarget.style.color = "#c8f000"} onMouseLeave={e => e.currentTarget.style.color = "rgba(200,240,0,0.45)"}>
                         View Rules & Prize Details →
                       </button>
@@ -617,22 +608,8 @@ export default function App() {
                   onSignUp={() => { setAuthMode("signup"); setShowAuth(true); }}
                 />
               )}
-              {activeTab === "groups"  && (user
-                ? <GroupStage />
-                : <SignInGate
-                    tab="groups"
-                    onSignIn={() => { setAuthMode("login");  setShowAuth(true); }}
-                    onSignUp={() => { setAuthMode("signup"); setShowAuth(true); }}
-                  />
-              )}
-              {activeTab === "bracket" && (user
-                ? <Bracket />
-                : <SignInGate
-                    tab="bracket"
-                    onSignIn={() => { setAuthMode("login");  setShowAuth(true); }}
-                    onSignUp={() => { setAuthMode("signup"); setShowAuth(true); }}
-                  />
-              )}
+              {activeTab === "groups" && <GroupStage />}
+              {activeTab === "bracket" && <Bracket />}
               {activeTab === "mine"      && !authLoading && (
                 activeBracketId
                   ? <MyBracket
@@ -711,14 +688,10 @@ export default function App() {
         </div>
       </div>
 
-      {/* Responsive offset + CTA pulse */}
+      {/* Responsive offset */}
       <style>{`
         @media (min-width: 768px) {
           #app-main { margin-left: ${sidebarW}px; transition: margin-left 0.3s ease-in-out; }
-        }
-        @keyframes ctaPulse {
-          0%,100% { box-shadow: 0 0 32px rgba(220,38,38,0.55), 0 4px 16px rgba(0,0,0,0.4); }
-          50%      { box-shadow: 0 0 52px rgba(239,68,68,0.8),  0 4px 20px rgba(0,0,0,0.4); }
         }
       `}</style>
 
