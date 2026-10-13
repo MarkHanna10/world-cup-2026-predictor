@@ -8,6 +8,7 @@ import PostMatchBreakdown from "../components/PostMatchBreakdown";
 import LiveMatchPanel from "../components/LiveMatchPanel";
 import fixtures from "../data/wc2026_fixtures.json";
 import eloRatings from "../data/elo_ratings.json";
+import officialThirdPlace from "../data/r32_third_place_official.json";
 
 const GROUPS = ["A","B","C","D","E","F","G","H","I","J","K","L"];
 const GROUP_MATCHES = fixtures.filter(m => m.group);
@@ -222,11 +223,26 @@ function buildLiveR32Slots(byGroup, resultsMap) {
       .sort((a, b) => b.pts - a.pts || getElo(b.team) - getElo(a.team)).slice(0, 8);
     const assignments = assign3rdPlace(thirds);
     for (const [idx] of KO_THIRD_SLOTS) {
-      if (assignments[idx]) slots[idx].away = assignments[idx];
+      const team = officialThirdPlace[idx] ?? assignments[idx];
+      if (team) slots[idx].away = team;
     }
   }
 
   return slots;
+}
+
+// Side that won a knockout tie. Level scores fall back to `winner`
+// ("home" | "away"), which records who won the penalty shootout.
+function koWinnerSide(r) {
+  const hs = +r.home_score, as_ = +r.away_score;
+  if (hs > as_) return "home";
+  if (as_ > hs) return "away";
+  return r.winner === "home" || r.winner === "away" ? r.winner : null;
+}
+
+function koWinner(r, home, away) {
+  const side = koWinnerSide(r);
+  return side === "home" ? home : side === "away" ? away : null;
 }
 
 function buildLiveBracket(byGroup, resultsMap, r32Slots) {
@@ -242,8 +258,7 @@ function buildLiveBracket(byGroup, resultsMap, r32Slots) {
     const r = resultsMap[`M${73 + i}`];
     if (!r || r.home_score == null) continue;
     const slot = r32Slots[i];
-    const hs = +r.home_score, as_ = +r.away_score;
-    bw.R32[i] = hs > as_ ? slot.home : hs < as_ ? slot.away : null;
+    bw.R32[i] = koWinner(r, slot.home, slot.away);
   }
 
   const r16Base = 89;
@@ -252,8 +267,7 @@ function buildLiveBracket(byGroup, resultsMap, r32Slots) {
     if (!r || r.home_score == null) continue;
     const [hr, hi, ar, ai] = KO_MATCH_SOURCES.R16[i];
     const homeTeam = bw[hr][hi], awayTeam = bw[ar][ai];
-    const hs = +r.home_score, as_ = +r.away_score;
-    bw.R16[i] = hs > as_ ? homeTeam : as_ > hs ? awayTeam : null;
+    bw.R16[i] = koWinner(r, homeTeam, awayTeam);
   }
 
   const qfBase = 97;
@@ -262,8 +276,7 @@ function buildLiveBracket(byGroup, resultsMap, r32Slots) {
     if (!r || r.home_score == null) continue;
     const [hr, hi, ar, ai] = KO_MATCH_SOURCES.QF[i];
     const homeTeam = bw[hr][hi], awayTeam = bw[ar][ai];
-    const hs = +r.home_score, as_ = +r.away_score;
-    bw.QF[i] = hs > as_ ? homeTeam : as_ > hs ? awayTeam : null;
+    bw.QF[i] = koWinner(r, homeTeam, awayTeam);
   }
 
   for (let i = 0; i < 2; i++) {
@@ -271,15 +284,12 @@ function buildLiveBracket(byGroup, resultsMap, r32Slots) {
     if (!r || r.home_score == null) continue;
     const [hr, hi, ar, ai] = KO_MATCH_SOURCES.SF[i];
     const homeTeam = bw[hr][hi], awayTeam = bw[ar][ai];
-    const hs = +r.home_score, as_ = +r.away_score;
-    bw.SF[i] = hs > as_ ? homeTeam : as_ > hs ? awayTeam : null;
+    bw.SF[i] = koWinner(r, homeTeam, awayTeam);
   }
 
   const rF = resultsMap["M104"];
   if (rF && rF.home_score != null) {
-    const homeTeam = bw.SF[0], awayTeam = bw.SF[1];
-    const hs = +rF.home_score, as_ = +rF.away_score;
-    bw.F[0] = hs > as_ ? homeTeam : as_ > hs ? awayTeam : null;
+    bw.F[0] = koWinner(rF, bw.SF[0], bw.SF[1]);
   }
 
   return bw;
@@ -354,8 +364,10 @@ function BracketMatchCard({ round, idx, r32Slots, bw, resultsMap, now }) {
   const hasScore = hasResult;
   const hs = hasScore ? +result.home_score : null;
   const as_ = hasScore ? +result.away_score : null;
-  const homeWon = hasScore && hs > as_;
-  const awayWon = hasScore && as_ > hs;
+  const winSide = hasScore ? koWinnerSide(result) : null;
+  const homeWon = winSide === "home";
+  const awayWon = winSide === "away";
+  const onPens = hasScore && hs === as_ && winSide != null;
   const upcoming = sched ? parseFixtureDate(sched.date, sched.time) : null;
   const isLive = upcoming && now >= upcoming && now < new Date(upcoming.getTime() + 120 * 60 * 1000);
 
@@ -378,7 +390,7 @@ function BracketMatchCard({ round, idx, r32Slots, bw, resultsMap, now }) {
             <span style={{ fontSize: "0.6rem", fontWeight: 900, color: "#22c55e" }}>LIVE</span>
           ) : hasScore ? (
             <span style={{ fontSize: "0.65rem", fontWeight: 900, color: "#c8f000", fontFamily: "'Bebas Neue',sans-serif", letterSpacing: "0.05em" }}>
-              {hs} – {as_}
+              {hs} – {as_}{onPens && <span className="ml-1 text-white/50">pens</span>}
             </span>
           ) : (
             <span style={{ fontSize: "0.6rem", color: "rgba(255,255,255,0.3)", fontWeight: 600 }}>
@@ -604,6 +616,11 @@ function MatchRow({ fixture, result, now, r32Slots, bw, userPick = null, conf = 
               <span className="font-black tabular-nums text-sm" style={{ color: "#c8f000" }}>
                 {result.home_score} – {result.away_score}
               </span>
+              {result.winner && +result.home_score === +result.away_score && (
+                <span className="text-[0.55rem] font-bold text-white/50">
+                  {result.winner === "home" ? homeTeam : awayTeam} on pens
+                </span>
+              )}
               {userPick != null && !fixture.isKnockout && (
                 <span style={{ fontSize: "0.55rem", fontWeight: 900, color: pickRight ? "#22c55e" : "#ef4444" }}>
                   {pickRight ? "✓ your pick" : "✗ your pick"}

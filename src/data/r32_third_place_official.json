@@ -1,0 +1,11 @@
+{
+  "_note": "Official Round of 32 slots for the third-placed teams. FIFA fills these from a fixed lookup table, so once the draw is known it overrides the app's own assignment. Keys are Round of 32 slot indexes.",
+  "1": "Paraguay",
+  "4": "Sweden",
+  "6": "Ecuador",
+  "7": "DR Congo",
+  "8": "Bosnia",
+  "9": "Senegal",
+  "12": "Algeria",
+  "14": "Ghana"
+}

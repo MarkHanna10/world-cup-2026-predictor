@@ -6,7 +6,7 @@ A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model
 
 **Status:** the tournament ended on 19 July 2026 with Spain beating Argentina 1–0 in the final. Picks are closed and the data is frozen. The model's predictions stay open to everyone, no account needed.
 
-![Schedule view of the World Cup 2026 Predictor](docs/screenshot.png)
+![Knockout bracket of the World Cup 2026 Predictor, ending with Spain as champion](docs/screenshot.png)
 
 ## Highlights
 
@@ -15,6 +15,7 @@ A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model
 - **Live scores.** A Supabase Edge Function polls match data every minute through `pg_cron` and pushes goals, cards and subs to the browser over Realtime. No client polling.
 - **Picks and leagues.** Email, magic link and Google sign-in. Private leagues with join codes, confidence picks, streaks and a database trigger to lock picks at kickoff.
 - **Automated data pipeline.** GitHub Actions refresh form data and rerun the simulation daily, commit the new JSON and redeploy the site. The schedule is off now the tournament is over.
+- **Data correction.** The live feed filed several knockout scores under the wrong match numbers. A one-off correction rebuilt all 31 knockout results from two independent sources that agree on every game, and a new shootout-winner column lets penalty wins resolve the bracket.
 - **Security.** Row-level security on every table. The service-role key lives only in the edge function and CI secrets.
 
 ## Tech stack
