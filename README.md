@@ -1,8 +1,10 @@
 # World Cup 2026 Predictor
 
-A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model forecast every game, users submitted their own picks, and private leagues competed on a live leaderboard.
+A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model forecast every game, users submitted their own picks, and private leagues competed on a live leaderboard. Built 50/50 by Mark Hanna and Karim Assaad.
 
-**Live site:** [markhanna10.github.io/world-cup-2026-predictor](https://markhanna10.github.io/world-cup-2026-predictor/) · **100+ users** during the tournament
+**Live site:** [worldcup26-lemon-five.vercel.app](https://worldcup26-lemon-five.vercel.app/) · **120+ users across 8 leagues** during the tournament
+
+This repo is Mark's copy of the project, deployed at [markhanna10.github.io/world-cup-2026-predictor](https://markhanna10.github.io/world-cup-2026-predictor/). The original lives at [TheCoolKar/world-cup-predictor](https://github.com/TheCoolKar/world-cup-predictor).
 
 **Status:** the tournament ended on 19 July 2026 with Spain beating Argentina 1–0 in the final. Picks are closed and the data is frozen. The model's predictions stay open to everyone, no account needed.
 
@@ -15,7 +17,7 @@ A full-stack web app for predicting 2026 FIFA World Cup matches. A trained model
 - **Live scores.** A Supabase Edge Function polls match data every minute through `pg_cron` and pushes goals, cards and subs to the browser over Realtime. No client polling.
 - **Picks and leagues.** Email, magic link and Google sign-in. Private leagues with join codes, confidence picks, streaks and a database trigger to lock picks at kickoff.
 - **Automated data pipeline.** GitHub Actions refresh form data and rerun the simulation daily, commit the new JSON and redeploy the site. The schedule is off now the tournament is over.
-- **Data correction.** The live feed filed several knockout scores under the wrong match numbers. A one-off correction rebuilt all 31 knockout results from two independent sources that agree on every game, and a new shootout-winner column lets penalty wins resolve the bracket.
+- **Data correction.** In this copy's database, the live feed filed several knockout scores under the wrong match numbers. A one-off correction rebuilt all 31 knockout results from two independent sources that agree on every game, and a new shootout-winner column lets penalty wins resolve the bracket.
 - **Security.** Row-level security on every table. The service-role key lives only in the edge function and CI secrets.
 
 ## Tech stack
@@ -82,6 +84,6 @@ supabase/       SQL migrations and Edge Functions
 docs/           Architecture and key-rotation runbook
 ```
 
-## Author
+## Authors
 
-Mark Hanna, Software Engineering student at Western University.
+Built as an equal partnership by [Mark Hanna](https://github.com/MarkHanna10) and [Karim Assaad](https://github.com/TheCoolKar).
